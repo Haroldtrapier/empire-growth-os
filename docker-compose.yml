@@ -1,0 +1,28 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: apps/api
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./empire_growth_os.db
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - ./apps/api:/app
+    command: uvicorn app.main:app --host 0.0.0.0 --reload
+
+  web:
+    image: python:3.11-slim
+    working_dir: /app
+    volumes:
+      - ./apps/web:/app
+    ports:
+      - "8080:8080"
+    command: python3 -m http.server 8080
+
+networks:
+  default:
+    name: empire-growth-os-network
